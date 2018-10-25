@@ -4,6 +4,10 @@ import com.ait.lienzo.client.core.event.NodeMouseEnterEvent;
 import com.ait.lienzo.client.core.event.NodeMouseEnterHandler;
 import com.ait.lienzo.client.core.event.NodeMouseExitEvent;
 import com.ait.lienzo.client.core.event.NodeMouseExitHandler;
+import com.ait.lienzo.client.core.event.NodeMouseOutEvent;
+import com.ait.lienzo.client.core.event.NodeMouseOutHandler;
+import com.ait.lienzo.client.core.event.NodeMouseOverEvent;
+import com.ait.lienzo.client.core.event.NodeMouseOverHandler;
 import com.ait.lienzo.client.core.shape.Layer;
 import com.ait.lienzo.client.core.shape.MultiPath;
 import com.ait.lienzo.client.core.shape.Text;
@@ -54,6 +58,21 @@ public class EnterExitOverOutEventsTests extends FlowPanel implements MyLienzoTe
             }
         });
 
+        parentMultiPath.addNodeMouseOverHandler(new NodeMouseOverHandler() {
+            @Override
+            public void onNodeMouseOver(NodeMouseOverEvent event) {
+                showEventText("Over", event.getX(), event.getY());
+            }
+        });
+
+        parentMultiPath.addNodeMouseOutHandler(new NodeMouseOutHandler() {
+            @Override
+            public void onNodeMouseOut(NodeMouseOutEvent event) {
+                showEventText("Out", event.getX(), event.getY());
+            }
+        });
+
+
         int width = WIDTH - MARGIN;
         int height = HEIGHT - MARGIN;
         WiresShape rectangle = createRectangle(parentShape, width, height);
@@ -91,7 +110,7 @@ public class EnterExitOverOutEventsTests extends FlowPanel implements MyLienzoTe
 
     private WiresShape createRectangle(WiresShape parent, int width, int height) {
         MultiPath mp = new MultiPath()
-                .rect((WIDTH-width)/2 + MARGIN, (HEIGHT-height)/2 + MARGIN, width, height)
+                .rect((WIDTH-width)/2 + MARGIN, MARGIN/2, width, height)
                 .setFillColor("#006400")
                 .setFillAlpha(parent.getPath().getFillAlpha() + 0.1)
                 .setDraggable(false);
