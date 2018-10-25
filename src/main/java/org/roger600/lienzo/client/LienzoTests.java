@@ -37,6 +37,7 @@ public class LienzoTests implements EntryPoint {
 
     private final static MyLienzoTest[] TESTS = new MyLienzoTest[] {
             new SelectionManagerTests(),
+            new EnterExitOverOutEventsTests(),
             new TextWrapTests(),
             new AutoMagnetsConnectorsTests(),
             new CardinalIntersectSimpleTest(),
