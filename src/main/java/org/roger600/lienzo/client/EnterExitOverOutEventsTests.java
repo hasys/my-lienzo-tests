@@ -26,12 +26,11 @@ public class EnterExitOverOutEventsTests extends FlowPanel implements MyLienzoTe
                                                                       HasMediators {
 
     private Layer layer;
-    private WiresShape parentShape;
     private static final String FAMILY = "Verdana";
-    private static final String COLOR = "#000000";
+    private static final String BLACK_COLOR = "#000000";
     private static final int FONT_SIZE = 12;
     private static final int WIDTH = 600;
-    private static final int HEIGHT = WIDTH;
+    private static final int HEIGHT = 600;
     private static final int MARGIN = WIDTH/10;
 
     public void test(Layer _layer) {
@@ -43,32 +42,32 @@ public class EnterExitOverOutEventsTests extends FlowPanel implements MyLienzoTe
                 .setFillColor("#006400")
                 .setFillAlpha(0.1)
                 .setDraggable(false);
-        parentShape = new WiresShape(parentMultiPath);
+        WiresShape parentShape = new WiresShape(parentMultiPath);
         parentMultiPath.addNodeMouseEnterHandler(new NodeMouseEnterHandler() {
             @Override
             public void onNodeMouseEnter(NodeMouseEnterEvent event) {
-                showEventText("Enter", event.getX(), event.getY());
+                showEventText("Enter", BLACK_COLOR, event.getX(), event.getY());
             }
         });
 
         parentMultiPath.addNodeMouseExitHandler(new NodeMouseExitHandler() {
             @Override
             public void onNodeMouseExit(NodeMouseExitEvent event) {
-                showEventText("Exit", event.getX(), event.getY());
+                showEventText("Exit", BLACK_COLOR, event.getX(), event.getY());
             }
         });
 
         parentMultiPath.addNodeMouseOverHandler(new NodeMouseOverHandler() {
             @Override
             public void onNodeMouseOver(NodeMouseOverEvent event) {
-                showEventText("Over", event.getX(), event.getY());
+                showEventText("Over", BLACK_COLOR, event.getX(), event.getY());
             }
         });
 
         parentMultiPath.addNodeMouseOutHandler(new NodeMouseOutHandler() {
             @Override
             public void onNodeMouseOut(NodeMouseOutEvent event) {
-                showEventText("Out", event.getX(), event.getY());
+                showEventText("Out", BLACK_COLOR, event.getX(), event.getY());
             }
         });
 
@@ -76,31 +75,46 @@ public class EnterExitOverOutEventsTests extends FlowPanel implements MyLienzoTe
         int width = WIDTH - MARGIN;
         int height = HEIGHT - MARGIN;
         WiresShape rectangle = createRectangle(parentShape, width, height);
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 3; i++) {
             rectangle = createRectangle(rectangle, width -= MARGIN, height -= MARGIN);
         }
 
+        width = width/2 + MARGIN;
+        height = height/2 + MARGIN;
+
+        rectangle.add(getShape(rectangle, WIDTH + MARGIN - width*2, MARGIN, width, height));
+        rectangle.add(getShape(rectangle, WIDTH + MARGIN - width, MARGIN, width, height));
+
+        final MultiPath parentMultiPath2 = new MultiPath()
+                .rect( WIDTH + MARGIN, MARGIN, WIDTH/2.0, HEIGHT)
+                .setFillColor("#000064")
+                .setFillAlpha(0.7)
+                .setDraggable(false);
+        WiresShape parentShape2 = new WiresShape(parentMultiPath2);
+
         wires_manager.register(parentShape);
+        wires_manager.register(parentShape2);
         batch();
     }
 
-    private void showEventText(String text, int x, int y) {
+    private void showEventText(String text, String color, int x, int y) {
         final Text eventText = new Text(text)
                 .setX(x)
                 .setY(y)
                 .setFontFamily(FAMILY)
                 .setFontSize(FONT_SIZE)
-                .setStrokeColor(COLOR)
+                .setStrokeColor(color)
                 .setVisible(true);
 
-        parentShape.addChild(eventText);
+        layer.add(eventText);
+        eventText.moveToBottom();
         batch();
         GWT.log("Event fired: " + text);
 
         Timer t = new Timer() {
             @Override
             public void run() {
-                parentShape.removeChild(eventText);
+                layer.remove(eventText);
                 batch();
             }
         };
@@ -109,16 +123,20 @@ public class EnterExitOverOutEventsTests extends FlowPanel implements MyLienzoTe
     }
 
     private WiresShape createRectangle(WiresShape parent, int width, int height) {
+        WiresShape result = getShape(parent, WIDTH - width + MARGIN, MARGIN, width, height);
+        parent.add(result);
+
+        return result;
+    }
+
+    private WiresShape getShape(WiresShape parent, int x, int y, int width, int height) {
         MultiPath mp = new MultiPath()
-                .rect((WIDTH-width)/2 + MARGIN, MARGIN/2, width, height)
+                .rect(x, y, width, height)
                 .setFillColor("#006400")
                 .setFillAlpha(parent.getPath().getFillAlpha() + 0.1)
                 .setDraggable(false);
 
-        WiresShape result = new WiresShape(mp);
-        parent.add(result);
-
-        return result;
+        return new WiresShape(mp);
     }
 
     @Override
